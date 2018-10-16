@@ -1,0 +1,25 @@
+.user-cont {
+    display: flex;
+    align-items: center;
+    
+    margin: 1rem auto;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 1rem;
+    color: #61dafb;
+}
+
+.user-cont .name {
+    margin-left: 1rem; 
+    text-transform: capitalize;
+}
+.user-cont .thumbnail-cont {
+    overflow: hidden;
+    border-radius: 100%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
