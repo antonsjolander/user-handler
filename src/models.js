@@ -26,11 +26,14 @@ export default {
                 this.loading(true);
                 fetch(`http://localhost:8181/users/${id}`, {
                     method: 'delete'})
-                .then((response) => {return response.json()})
-                .then((myJson) => {
-                    console.log(myJson)
+                .then((response) => {
+                    if(response.status == '200'){
+                       this.getUsers();
+                    }
                 })
+                
             }
+            
         }
     }
 }

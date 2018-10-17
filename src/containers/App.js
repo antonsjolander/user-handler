@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from '../logo.svg';
 import '../App.css';
-import Sidebar from '../components/Sidebar';
+import AppBarHeader from '../components/AppBarHeader';
 import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Main from './Main';
@@ -9,7 +9,7 @@ import { withRouter } from 'react-router-dom';
 
 class App extends Component {
 
-  state = { users: [] }
+  state = { users: [] , open: false}
 
   componentDidMount() {
     const { dispatch, users } = this.props
@@ -17,13 +17,19 @@ class App extends Component {
     
   }
 
+  OpenModael() {
+    this.setState({ open: true });
+  }
+
   render() {
     const { users } = this.props.users;
-    console.log(users)
+    console.log("is this rerendered?", users)
     return (
       <div className="App">
-        <Sidebar/>
-        <Main {...this.props}/>
+        <AppBarHeader title="User handler"/>
+        <div className="container">
+          <Main {...this.props}/>
+        </div>
       </div>
     );
   }
