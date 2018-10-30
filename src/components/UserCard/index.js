@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -13,23 +13,29 @@ import { Link } from 'react-router-dom';
 
 const styles = {
   card: {
-    maxWidth: 200,
-    height:280,
-    padding: 20,
+    padding: "10px 20px",
     display: 'flex',
     alignItems: 'center',
-    flexDirection: 'column',
-    jusifyContent: 'center',
+    textAlign: 'left',
+    justifyContent: 'flex-start',
     margin: 'auto'
   },
   media: {
-    height: 120,
-    width: 120,
+    height: 100,
+    width: 100,
     borderRadius: '100%'
 
   },
+  type: {
+    margin: '10px 4px',
+    textTransform: 'capitalize'
+  }, 
+  content: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
   action: {
-      marginTop:'auto'
+     padding:0
   }
 };
 
@@ -44,30 +50,30 @@ function UserCard(props) {
           image={props.picture}
           title="User picture"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+        <CardContent className={classes.content}>
+          <Typography className={classes.type} gutterBottom variant="h6" component="h6">
             {props.name.first} {props.name.last}
           </Typography>
-          
+          <CardActions className={classes.action} >
+            <Button
+                component={MyLink} 
+                size="small"
+                variant="contained"  
+                color="primary"
+                id={props.id}>
+              Edit
+            </Button>
+            <Button 
+                size="small"
+                variant="contained" 
+                color="secondary"
+                onClick={() => props.dispatch.users.removeUser(props.id)}>
+              Remove
+            </Button>
+          </CardActions>
         </CardContent>
       
-      <CardActions className={classes.action} >
-        <Button
-            component={MyLink} 
-            size="small"
-            variant="contained"  
-            color="primary"
-            id={props.id}>
-          Edit
-        </Button>
-        <Button 
-            size="small"
-            variant="contained" 
-            color="secondary"
-            onClick={() => props.dispatch.users.removeUser(props.id)}>
-          Remove
-        </Button>
-      </CardActions>
+      
     </Card>
   );
 }

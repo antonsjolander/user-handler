@@ -6,7 +6,6 @@ import UserDetails from '../components/UserDetails';
 
 export default class Main extends Component {
     render() {
-        const { users } = this.props;
         return (
             <div className="container">
                 <Switch>

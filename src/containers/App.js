@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
-import '../App.css';
 import AppBarHeader from '../components/AppBarHeader';
-import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Main from './Main';
 import { withRouter } from 'react-router-dom';
+import '../App.css';
 
 class App extends Component {
 
   state = { users: [] , open: false}
 
   componentDidMount() {
-    const { dispatch, users } = this.props
+    const { dispatch } = this.props
     dispatch.users.getUsers();
-    
   }
 
   OpenModael() {
@@ -22,11 +19,9 @@ class App extends Component {
   }
 
   render() {
-    const { users } = this.props.users;
-    console.log("is this rerendered?", users)
     return (
       <div className="App">
-        <AppBarHeader title="User handler"/>
+        <AppBarHeader title="Users"/>
         <div className="container">
           <Main {...this.props}/>
         </div>

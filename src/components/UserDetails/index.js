@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+
 
 const styles = {
     container: {
@@ -25,10 +28,7 @@ const styles = {
 }
 
 class UserDetails extends Component {
-    constructor(props) {
-        super(props);
-    }
-
+    
     state = { 
         first: "",
         last: "",
@@ -38,25 +38,27 @@ class UserDetails extends Component {
     
     componentDidMount() {
         const users = this.props.users.users
-        console.log('its here', users);
         const person = users.find((item) => {
-            return item.id == this.props.match.params.id;
+            return item.id === this.props.match.params.id;
         })
         if(person){
             sessionStorage.setItem('first', person.name.first)
             sessionStorage.setItem('last', person.name.last)
             sessionStorage.setItem('picture', person.picture)
+            sessionStorage.setItem('id', person.id)
             this.setState({
                 first: person.name.first,
                 last: person.name.last,
-                picture: person.picture
+                picture: person.picture,
+                id: person.id
             })
         }
         else{
             this.setState({
                 first: sessionStorage.getItem("first"),
                 last: sessionStorage.getItem("last"),
-                picture: sessionStorage.getItem("picture")
+                picture: sessionStorage.getItem("picture"),
+                id: sessionStorage.getItem("id")
             })
         }
     }
@@ -70,18 +72,19 @@ class UserDetails extends Component {
 
 
     render() {
-        console.log('this is the props', this.props)
-        const { first, last, picture } = this.state;
+        const { classes } = this.props
+        const { picture, id } = this.state;
+        const { dispatch } = this.props;
+        
         return (
-            <Grid style={styles.container} 
+            <Grid className={classes.container} 
                 container 
                 direction="column" 
                 justify="space-evenly"
                 spacing={24}
                 >
-                {picture && (
-                <Grid item style={styles.col} xs={12}>
-                    <div style={styles.imgCont}>
+                <Grid item className={classes.col} xs={12}>
+                    <div className={classes.imgCont}>
                         <img 
                             src={picture}
                             ref={img => this.img = img}
@@ -89,7 +92,7 @@ class UserDetails extends Component {
                         />
                     </div>
                     <TextField
-                        style={styles.textField}
+                        className={classes.textField}
                         fullWidth
                         id="outlined-name"
                         label="Image url"
@@ -98,14 +101,11 @@ class UserDetails extends Component {
                         margin="normal"
                         variant="outlined"
                     />
-                   
                 </Grid>
-                )}
-                {first && (
-                <Grid item style={styles.col} xs={12}>
+                <Grid item className={classes.col} xs={12}>
                 
                 <TextField
-                    style={styles.textField}    
+                    className={classes.textField}    
                     fullWidth
                     id="outlined-name"
                     label="First name"
@@ -115,7 +115,7 @@ class UserDetails extends Component {
                     variant="outlined"
                     />
                 <TextField
-                    style={styles.textField}
+                    className={classes.textField}
                     fullWidth
                     id="outlined-name"
                     label="last name"
@@ -125,10 +125,30 @@ class UserDetails extends Component {
                     variant="outlined"
                     />    
                     </Grid>
-                )}
+                    <Grid item xs={12}>
+                    <Button 
+                        size="small"
+                        variant="contained" 
+                        color="primary"
+                        onClick={() => dispatch.users.updateUser(id, {
+                            "name": {
+                                "first": this.state.first, 
+                                "last": this.state.last
+                            },
+                            "picture": this.state.picture,
+                            "id": this.state.id
+                        })}>
+                        Save
+                    </Button>
+                    </Grid>
             </Grid>
+
         )
     }
 }
 
-export default UserDetails;
+UserDetails.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
+export default withStyles(styles)(UserDetails);
