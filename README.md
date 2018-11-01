@@ -16,6 +16,6 @@ $ yarn start
 
 to start the dev server.
 
-Make shure that your backend runs on localhost:8181. If not you need to change the URL variable in models.js
+Make sure that your backend runs on localhost:8181. If not you need to change the URL variable in models.js
 
 //
