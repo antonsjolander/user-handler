@@ -1,38 +1,53 @@
 import React, {Component} from 'react';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import * as yup from 'yup';
+
+
 
 
 const styles = {
-    container: {
-      maxWidth: 1200,
-      margin: '1rem auto 0 auto',
-      paddig: '0 1rem'
-    },
-    col: {
+    formCont: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        width: 300,
+        maxWidth: '100%'
+    },
+    title: {
+        textTransform: 'capitalize'
     },
     textField: {
         maxWidth: 300
     },
     imgCont: {
-        width:200,
-        height:200,
+        width:100,
+        height:100,
+        margin: "auto"
     }
     
 }
+
+const schema = yup.object().shape({
+    first: yup.string().required(),
+    last: yup.string().required(),
+    picture: yup.string().url(),
+})
 
 class UserDetails extends Component {
     
     state = { 
         first: "",
         last: "",
-        picture: ""
+        picture: "",
+        firstErr:false,
+        lastErr: false,
+        pictureErr: false
     }
 
     
@@ -53,6 +68,15 @@ class UserDetails extends Component {
                 id: person.id
             })
         }
+        else if (this.props.match.params.id === 'newUser') {
+            this.setState({
+                first: '',
+                last: '',
+                picture: '',
+                id: '',
+                newUser: true
+            })
+        }
         else{
             this.setState({
                 first: sessionStorage.getItem("first"),
@@ -66,83 +90,144 @@ class UserDetails extends Component {
     handleChange = val => event => {
         this.setState({
         [val]: event.target.value,
+        [val + "Err"] : false
         });
+
     };
     
+    handleSubmit = () => {
+        const { history, dispatch } = this.props;
+        const { id, newUser } = this.state
+        schema.validate({
+            first: this.state.first,
+            last: this.state.last,
+            picture: this.state.picture,
+        }).then((value) => {
+            console.log(value)
+            if(newUser) {
+                dispatch.users.addUser(id,{
+                    "name": {
+                        "first": this.state.first, 
+                        "last": this.state.last
+                    },
+                    "picture": this.state.picture,
+                    "id": this.state.id
+                })
+            }
+            else {
+                dispatch.users.updateUser(id, {
+                    "name": {
+                        "first": this.state.first, 
+                        "last": this.state.last
+                    },
+                    "picture": this.state.picture,
+                    "id": this.state.id
+                })
+            }
+            history.goBack();
+        }).catch((err) => {
+            
+            switch (err.path) {
+                case "first":
+                    this.setState({
+                        firstErr: true
+                    })
+                    break;
+                case "last":
+                    this.setState({
+                        lastErr: true
+                    })
+                    break;
+                case "picture":
+                    this.setState({
+                        pictureErr: true
+                    })
+                    break;    
+            }
+
+        })
+    }
+
+    handleClose = () => {
+        const { history } = this.props;
+        history.goBack();
+    }
 
 
     render() {
-        const { classes } = this.props
-        const { picture, id } = this.state;
-        const { dispatch } = this.props;
-        
+        const { classes , location } = this.props
+        const { picture, first, last , firstErr, lastErr, pictureErr} = this.state; 
         return (
-            <Grid className={classes.container} 
-                container 
-                direction="column" 
-                justify="space-evenly"
-                spacing={24}
-                >
-                <Grid item className={classes.col} xs={12}>
+            <Dialog
+                open={location.state.modal}
+                onClose={this.handleClose}
+                aria-labelledby="form-dialog-title"
+            >
+                <DialogTitle className={classes.title}>
+                    {first} {last}
+                </DialogTitle>
+                <DialogContent>
                     <div className={classes.imgCont}>
                         <img 
+                            alt=""
                             src={picture}
                             ref={img => this.img = img}
                             onError={() => this.img.src = 'https://image.flaticon.com/icons/svg/21/21104.svg'}    
                         />
                     </div>
-                    <TextField
-                        className={classes.textField}
-                        fullWidth
-                        id="outlined-name"
-                        label="Image url"
-                        value={this.state.picture}
-                        onChange={this.handleChange('picture')}
-                        margin="normal"
-                        variant="outlined"
-                    />
-                </Grid>
-                <Grid item className={classes.col} xs={12}>
-                
-                <TextField
-                    className={classes.textField}    
-                    fullWidth
-                    id="outlined-name"
-                    label="First name"
-                    value={this.state.first}
-                    onChange={this.handleChange('first')}
-                    margin="normal"
-                    variant="outlined"
-                    />
-                <TextField
-                    className={classes.textField}
-                    fullWidth
-                    id="outlined-name"
-                    label="last name"
-                    value={this.state.last}
-                    onChange={this.handleChange('last')}
-                    margin="normal"
-                    variant="outlined"
-                    />    
-                    </Grid>
-                    <Grid item xs={12}>
+                    <div className={classes.formCont}>
+                        <TextField
+                            className={classes.textField}
+                            fullWidth
+                            id="outlined-name"
+                            label="Image url"
+                            value={picture}
+                            error={pictureErr}
+                            onChange={this.handleChange('picture')}
+                            margin="normal"
+                            
+                        />
+                        <TextField
+                            error={firstErr}
+                            className={classes.textField}    
+                            fullWidth
+                            id="outlined-name"
+                            label="First name"
+                            value={first}
+                            onChange={this.handleChange('first')}
+                            margin="normal"
+                           
+                            />
+                        <TextField
+                            error={lastErr}
+                            className={classes.textField}
+                            fullWidth
+                            id="outlined-name"
+                            label="last name"
+                            value={last}
+                            onChange={this.handleChange('last')}
+                            margin="normal"
+                            />
+                    </div>        
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                        size="small"
+                        variant="contained" 
+                        color="secondary"
+                        onClick={this.handleClose}>
+                        Close
+                    </Button>   
                     <Button 
                         size="small"
                         variant="contained" 
                         color="primary"
-                        onClick={() => dispatch.users.updateUser(id, {
-                            "name": {
-                                "first": this.state.first, 
-                                "last": this.state.last
-                            },
-                            "picture": this.state.picture,
-                            "id": this.state.id
-                        })}>
+                        onClick={this.handleSubmit}>
                         Save
                     </Button>
-                    </Grid>
-            </Grid>
-
+                    
+                </DialogActions>    
+            </Dialog>
         )
     }
 }

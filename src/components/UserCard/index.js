@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 
 const styles = {
   card: {
-    padding: "10px 20px",
+    padding: "10px 10px 10px 20px",
     display: 'flex',
     alignItems: 'center',
     textAlign: 'left',
@@ -41,7 +41,7 @@ const styles = {
 
 function UserCard(props) {
   const { classes } = props;
-  const MyLink = props => <Link to={`/user/${props.id}`} {...props}></Link>; 
+  const MyLink = props => <Link to={{ pathname: `/user/${props.id}`, state: { modal: true } }} {...props} ></Link>; 
   return (
     <Card className={classes.card}>
      

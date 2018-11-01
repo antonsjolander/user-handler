@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const URL = 'http://localhost:8181/users/';
+
 export default { 
     users:{
         state: {
@@ -17,7 +19,7 @@ export default {
         effects: {
             getUsers() {
                 this.loading(true);
-                axios.get('http://localhost:8181/users')
+                axios.get(URL )
                 .then((response) => {return response.data})
                 .then((myJson) => {
                     this.setUsers(myJson)
@@ -26,11 +28,11 @@ export default {
             },
             removeUser(id) {
                 this.loading(true);
-                axios.delete(`http://localhost:8181/users/${id}`, {
+                axios.delete(URL + id, {
                     method: 'delete'})
                 .then((response) => {
-                    if(response.status === '200'){
-                       this.getUsers();
+                    if(response.status == '200'){
+                        this.getUsers();
                     }
                 })
                 
@@ -38,7 +40,7 @@ export default {
             updateUser(id, payload , user ) {
                 console.log(user);
                 this.loading(true);
-                axios.put(`http://localhost:8181/users/${id}`, {
+                axios.put(URL + id, {
                     id: user.id,
                     name: {
                         first: user.name.first,
@@ -48,7 +50,25 @@ export default {
                     })
                 .then((response) => {
                     console.log(response)
-                    if(response.status === '200'){
+                    if(response.status == '200'){
+                       this.getUsers();
+                    }
+                })
+                
+            },
+            addUser(id, payload , user ) {
+                console.log(user);
+                this.loading(true);
+                axios.post(URL, {
+                    name: {
+                        first: user.name.first,
+                        last: user.name.last
+                    },
+                    picture: user.picture
+                    })
+                .then((response) => {
+                    console.log(response)
+                    if(response.status == '201'){
                        this.getUsers();
                     }
                 })
